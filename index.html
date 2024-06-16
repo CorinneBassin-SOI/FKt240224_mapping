@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Add a vector tile source</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
+<style>
+body { margin: 0; padding: 0; }
+#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+	mapboxgl.accessToken = 'pk.eyJ1Ijoic29pZHBtIiwiYSI6ImNrbjdzYzYwejByOGcydnJpbW53N3E2MzcifQ.rXD_30_U3teOx4JnoiKrWQ';
+    const map = new mapboxgl.Map({
+        container: 'map',
+        // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
+        style: 'https://api.maptiler.com/maps/19336117-1c08-420a-afed-d770b601bac7/style.json?key=egFVe2SmC2zBUYnGILbj',
+        zoom: 4,
+        center: [-91.92526540719126, -32.81297788490245]
+    });
+    map.on('load', () => {
+   
+    map.setFog({
+                    color: 'rgb(165, 190, 217)', // Lower atmosphere
+                    'high-color': 'rgb(27, 67, 161)', // Upper atmosphere
+                    'horizon-blend': 0.02, // Atmosphere thickness (default 0.2 at low zooms)
+                    'space-color': 'rgb(11, 11, 25)', // Background color
+                    'star-intensity': 0.6 // Background star brightness (default 0.35 at low zoooms )
+                });
+
+
+                map.addSource('ship',{
+                    'type':'geojson',
+                    'data':'https://api.maptiler.com/data/d55ba9d5-d02b-44be-ae7e-23d61e551507/features.json?key=egFVe2SmC2zBUYnGILbj'
+                   })
+                   map.addSource('sub',{
+                    'type':'geojson',
+                    'data':'https://api.maptiler.com/data/1cbb0b1c-e751-40e5-8750-4420281c5838/features.json?key=egFVe2SmC2zBUYnGILbj'  })
+                
+
+
+            map.addSource('map_bathy_all',{
+                'type':'raster',
+                'url':'mapbox://soidpm.2s8m2qq4'
+            })
+
+
+        map.addLayer({
+            'id': 'map_bathy_all',
+            'source': 'map_bathy_all',
+            'type': 'raster'
+        });
+
+       
+            map.addSource('map_bathy',{
+                'type':'raster',
+                'url':'mapbox://soidpm.bxz9tbl3'
+            })
+
+
+        map.addLayer({
+            'id': 'map_bathy',
+            'source': 'map_bathy',
+            'type': 'raster'
+        });
+
+
+        map.addLayer({
+                    'id':'ship',
+                    'type':'line',
+                    'source':'ship',
+                    'paint': {
+                        'line-width':1
+                    }
+            
+                })
+ 
+
+     map.addLayer({
+                     'id':'sub',
+                     'type':'circle',
+                 'source':'sub',
+                    'paint': {
+                    // Make circles larger as the user zooms from z12 to z22.
+                    'circle-radius': {
+                        'base': 1,
+                        'stops': [
+                            [1, 1],
+                            [22, 7]
+                        ]
+                    },
+                    'circle-color': 'black',
+                    'circle-stroke-color': 'white',
+                    'circle-stroke-width':0.5
+                }
+                 })
+    });
+
+
+    </script>
+
+</body>
+</html>
